@@ -2,7 +2,7 @@
 
 *You have died of state income tax.*
 
-**[Watch the trailer and visit the website](https://ninepointlabs.github.io/texodus-trail/)**
+**[Watch the trailer and visit the website](https://texodous.ninepointlabs.com/)**
 
 It's 2026. Rent in San Francisco is $3,950 for a one-bedroom, gas is $6.89 a
 gallon, and your landlord just texted "hey quick q." There's only one thing
