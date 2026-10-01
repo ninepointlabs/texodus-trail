@@ -70,13 +70,41 @@ regional airport. Your party will get dysentery. It's tradition.
   `omarchy theme set` restyles the game while you play. The scenery keeps its
   own sunset, because some things are sacred.
 - **Runs on Quickshell,** the same engine as the Omarchy shell. No Electron,
-  no browser, no Python, no packages to install.
+  no browser, no Python, and on Omarchy nothing extra to install.
 - **Plays nice with Hyprland.** It opens as a centered, floating 16:10 window
   sized to your monitor, and launching it again just focuses the one that's
   already open. F11 goes fullscreen.
 - **Saves after every move** to `~/.local/state/texodus-trail/save.json`.
   Close it mid-river, reboot, come back next week: your party will still be
   standing on the bank.
+
+## Requirements
+
+On Omarchy: nothing. Everything it needs ships with Omarchy.
+
+Anywhere else, you need a Wayland desktop and:
+
+| | Arch | Fedora | Debian / Ubuntu | Nix |
+|---|---|---|---|---|
+| [Quickshell](https://quickshell.org) (required) | `quickshell` | `quickshell` from the `errornointernet/quickshell` COPR | build from source | `quickshell` |
+| Qt 6 multimedia (for sound) | `qt6-multimedia` | `qt6-qtmultimedia` | `qml6-module-qtmultimedia` | `qt6.qtmultimedia` |
+| `jq` (for the launcher) | `jq` | `jq` | `jq` | `jq` |
+
+`install.sh` checks these and tells you the package name for your distro.
+Without Qt multimedia the game runs silent; without `jq` it runs in a plain
+window.
+
+How it behaves away from Omarchy:
+
+- **Hyprland 0.56 or newer** gets the full treatment: a floating, centered,
+  fully opaque window, and relaunching focuses the one that's open. Older
+  Hyprland versions and other compositors (Sway, niri, GNOME, KDE) run the
+  game in an ordinary window.
+- **No Omarchy theme?** The menus fall back to a built-in palette. The
+  scenery never used the theme anyway.
+- **Tested on:** Omarchy (Arch) with Qt 6.11, Quickshell 0.3.1 and Hyprland
+  0.56. Other distros should work given the packages above, but haven't been
+  tried yet. If yours misbehaves, open an issue and tell me what you're on.
 
 ## Install
 

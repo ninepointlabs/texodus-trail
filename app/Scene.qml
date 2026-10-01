@@ -225,7 +225,6 @@ Item {
         x: index * ridgeLayer.tileW
         width: ridgeLayer.tileW
         height: scene.height
-        preferredRendererType: Shape.CurveRenderer
         ShapePath {
           strokeWidth: 0
           strokeColor: "transparent"

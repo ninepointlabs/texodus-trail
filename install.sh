@@ -69,8 +69,45 @@ case "${1:-}" in
   *) die "unknown option '$1' (use --uninstall or --purge)" ;;
 esac
 
-command -v quickshell >/dev/null 2>&1 || die "quickshell is not installed (it ships with Omarchy; elsewhere: pacman -S quickshell)"
-command -v jq >/dev/null 2>&1 || echo "install.sh: jq not found; the window won't auto-float (the game still runs)" >&2
+# ------------------------------------------------------------ dependencies
+#
+# Omarchy has everything already. Elsewhere, name the right package for the
+# distro instead of a generic "install Qt".
+distro="$( . /etc/os-release 2>/dev/null; echo "${ID:-} ${ID_LIKE:-}")"
+hint() {
+  # hint <arch> <fedora> <debian> <nix>
+  case " $distro " in
+    *" arch "*) echo "$1" ;;
+    *" fedora "* | *" rhel "*) echo "$2" ;;
+    *" debian "* | *" ubuntu "*) echo "$3" ;;
+    *" nixos "*) echo "$4" ;;
+    *) echo "$1 (Arch) / $2 (Fedora) / $3 (Debian, Ubuntu) / $4 (Nix)" ;;
+  esac
+}
+
+if ! command -v quickshell >/dev/null 2>&1; then
+  die "Quickshell is not installed. It ships with Omarchy; elsewhere: $(hint "pacman -S quickshell" "dnf copr enable errornointernet/quickshell && dnf install quickshell" "build it from https://quickshell.org" "nix profile install nixpkgs#quickshell")"
+fi
+
+# Sound is optional (the game runs silent without it), but worth a nudge.
+qml_dirs=(/usr/lib/qt6/qml /usr/lib64/qt6/qml /usr/lib/*-linux-gnu/qt6/qml)
+IFS=: read -r -a extra_dirs <<<"${QML_IMPORT_PATH:-}:${QML2_IMPORT_PATH:-}:${NIXPKGS_QT6_QML_IMPORT_PATH:-}"
+qml_dirs+=("${extra_dirs[@]}")
+found_qml=0 have_multimedia=0
+for d in "${qml_dirs[@]}"; do
+  [[ -n $d && -d $d ]] || continue
+  found_qml=1
+  [[ -f $d/QtMultimedia/qmldir ]] && have_multimedia=1
+done
+if ((found_qml && !have_multimedia)); then
+  echo "install.sh: Qt 6 multimedia isn't installed, so the trail will be silent." >&2
+  echo "            For sound: $(hint "pacman -S qt6-multimedia" "dnf install qt6-qtmultimedia" "apt install qml6-module-qtmultimedia" "add qt6.qtmultimedia")" >&2
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "install.sh: jq isn't installed; the launcher can't float or focus the window on Hyprland (the game still runs)." >&2
+  echo "            $(hint "pacman -S jq" "dnf install jq" "apt install jq" "add jq")" >&2
+fi
 
 if [[ -e $dest || -L $dest ]] && ! ours_dir "$dest"; then
   die "$dest exists and isn't a Texodus Trail install; move it out of the way first"
