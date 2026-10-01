@@ -1,0 +1,63 @@
+#!/bin/bash
+# The Texodus Trail launcher.
+#
+#   texodus           start the game, or focus it if it's already running
+#   texodus --tiled   start it without floating the window
+#
+# The game is a Quickshell app (app/shell.qml). On Hyprland it opens as a
+# centered, floating 16:10 window sized to the focused monitor; nothing is
+# written to your Hyprland config for that, it's done with dispatchers when
+# the window appears.
+set -euo pipefail
+
+here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+app="$(cd "$here/../app" && pwd)"
+title="The Texodus Trail"
+tiled=0
+[[ ${1:-} == "--tiled" ]] && tiled=1
+
+have_hypr() { command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; }
+
+window_address() {
+  have_hypr || return 0
+  hyprctl clients -j 2>/dev/null | jq -r --arg t "$title" '.[] | select(.title == $t) | .address' | head -n 1
+}
+
+addr="$(window_address)"
+if [[ -n $addr ]]; then
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1 ||
+    hyprctl dispatch focuswindow "address:$addr" >/dev/null 2>&1 || true
+  exit 0
+fi
+
+quickshell --no-duplicate --daemonize --path "$app" >/dev/null 2>&1
+
+have_hypr || exit 0
+
+for _ in $(seq 60); do
+  addr="$(window_address)"
+  [[ -n $addr ]] && break
+  sleep 0.1
+done
+[[ -n $addr ]] || exit 0
+
+# Fully opaque, like Omarchy does for Steam and RetroArch: the default
+# window translucency lets the terminal behind bleed through the desert.
+for prop in opacity opacity_inactive; do
+  hyprctl dispatch "hl.dsp.window.set_prop({ prop = \"$prop\", value = \"1\", window = \"address:$addr\" })" >/dev/null 2>&1 || true
+done
+
+((tiled)) && exit 0
+
+# 16:10, as big as fits in 80% of the focused monitor (logical pixels)
+read -r mw mh < <(hyprctl monitors -j | jq -r '.[] | select(.focused) | "\((.width / .scale) | floor) \((.height / .scale) | floor)"')
+w=$((mw * 80 / 100))
+h=$((w * 10 / 16))
+if ((h > mh * 85 / 100)); then
+  h=$((mh * 85 / 100))
+  w=$((h * 16 / 10))
+fi
+
+hyprctl dispatch "hl.dsp.window.float({ action = \"enable\", window = \"address:$addr\" })" >/dev/null 2>&1 || true
+hyprctl dispatch "hl.dsp.window.resize({ x = $w, y = $h, exact = true, window = \"address:$addr\" })" >/dev/null 2>&1 || true
+hyprctl dispatch "hl.dsp.window.center({ window = \"address:$addr\" })" >/dev/null 2>&1 || true
