@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Texodus Trail</title>
+<meta name="description" content="The Oregon Trail, reimagined for the great California-to-Texas exodus. 1,880 miles of I-40, one Yoo-Haul, zero state income tax. You have died of dysentery. It's tradition.">
+<meta name="theme-color" content="#1b1424">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Texodus Trail">
+<meta property="og:description" content="You have died of state income tax. The Oregon Trail for the California-to-Texas exodus, free for Linux.">
+<meta property="og:image" content="https://ninepointlabs.github.io/texodus-trail/img/og.png">
+<meta property="og:url" content="https://ninepointlabs.github.io/texodus-trail/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the trail</a>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="The Texodus Trail, back to top"><img src="art/logo-short.svg" alt="" width="132" height="30"></a>
+  <nav aria-label="Sections">
+    <a href="#trailer">Trailer</a>
+    <a href="#fighters">Occupations</a>
+    <a href="#route">The Route</a>
+    <a href="#obits">Obituaries</a>
+    <a href="#faq">FAQ</a>
+    <a class="nav-cta" href="#install">Install</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- =============================================================== hero -->
+<section class="hero" id="top">
+  <div class="sky" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="sun"></div>
+    <svg class="mtn far" viewBox="0 0 1200 200" preserveAspectRatio="none"><polygon points="0,200 0,120 90,70 170,110 260,40 360,105 450,60 560,120 660,50 760,100 860,30 960,95 1060,55 1200,110 1200,200"/></svg>
+    <svg class="mtn near" viewBox="0 0 1200 200" preserveAspectRatio="none"><polygon points="0,200 0,150 120,110 210,150 330,95 430,140 540,105 650,160 760,115 880,150 990,100 1100,145 1200,120 1200,200"/></svg>
+    <div class="ground">
+      <div class="props">
+        <img src="art/palm.svg" alt="" class="prop p1">
+        <img src="art/saguaro.svg" alt="" class="prop p2">
+        <img src="art/joshua.svg" alt="" class="prop p3">
+        <img src="art/pumpjack.svg" alt="" class="prop p4">
+        <img src="art/longhorn.svg" alt="" class="prop p5">
+      </div>
+      <div class="road"><div class="dashes"></div></div>
+      <div class="truck-wrap">
+        <img src="art/yoohaul.svg" alt="A pixel-art Yoo-Haul with a mattress strapped to the roof" class="truck">
+        <span class="exhaust"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-copy">
+    <p class="kicker">Ninepoint Labs presents</p>
+    <h1><img src="art/logo.svg" alt="The Texodus Trail" class="logo"></h1>
+    <p class="tagline">You have died of state income tax.</p>
+    <p class="lede">It's <em>The Oregon Trail</em>, but for the great California-to-Texas migration. 1,880 miles of I-40. One rented truck. A mattress on the roof and a sourdough starter you could not bring yourself to pack. Your party will get dysentery. It's tradition.</p>
+    <div class="ctas">
+      <a class="btn btn-hot" href="#trailer">&#9654; Watch the trailer</a>
+      <a class="btn" href="#install">Install it (free, unlike California)</a>
+    </div>
+    <p class="fine">Free &amp; open source. MIT licensed. Runs on Linux. It does not run on a Mac, because everyone with a Mac already moved.</p>
+  </div>
+</section>
+
+<!-- ============================================================= ticker -->
+<div class="ticker" aria-label="Market data, roughly">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- ============================================================ trailer -->
+<section class="section" id="trailer">
+  <div class="wrap">
+    <h2 class="h"><span>Now showing</span>The Official Trailer</h2>
+    <p class="sub">Narrated by a man who has never once been in a hurry, and a surfer who should not have been allowed to vote on the river crossing.</p>
+    <div class="tv">
+      <div class="tv-screen">
+        <video id="trailer-video" controls playsinline preload="metadata" poster="media/poster.jpg">
+          <source src="media/trailer.mp4" type="video/mp4">
+          <track kind="captions" src="media/trailer.en.vtt" srclang="en" label="English (with twang)" default>
+          Your browser can't play this video. <a href="media/trailer.mp4">Download the trailer</a> instead, like it's 2004.
+        </video>
+      </div>
+      <div class="tv-chin"><span class="tv-brand">YOO-VISION</span><span class="tv-knob"></span><span class="tv-knob"></span></div>
+    </div>
+    <p class="rating-badge"><strong>RATED T FOR TWANG.</strong> Dysentery, crypto losses, a 72 oz steak, and mild blessing of hearts.</p>
+  </div>
+</section>
+
+<!-- ============================================================== pitch -->
+<section class="section pitch">
+  <div class="wrap two">
+    <div>
+      <h2 class="h"><span>The premise</span>Everyone you know is moving to Austin</h2>
+      <p>It's 2026. Rent in San Francisco is <strong>$3,950</strong> for a one-bedroom. Gas is <strong>$6.89</strong> a gallon. Your company called everyone back to an office it has since sublet. And your landlord just texted <q>hey quick q</q>.</p>
+      <p>There is only one rational response: load everything you own into a 26-foot rental truck and drive it into the desert like it's 1848, except the gold is a lack of state income tax and the cholera is gas station sushi.</p>
+      <p><em>The Texodus Trail</em> is a loving, mildly unhinged remake of the 1985 classic. Same numbered menus. Same river crossings. Same tombstones. Different dysentery.</p>
+    </div>
+    <figure class="shot tilt">
+      <img src="img/landlord.png" alt="In-game message: NEW TEXT MESSAGE. Your landlord: hey quick q" loading="lazy">
+      <figcaption>The inciting incident. Every hero's journey starts somewhere. Yours starts with a landlord who doesn't use punctuation.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <ul class="stats">
+      <li><b>1,880</b><span>miles of I-40 and friends</span></li>
+      <li><b>$4,812</b><span>for the Yoo-Haul</span></li>
+      <li><b>$612</b><span>to return it. You're not going back.</span></li>
+      <li><b>15</b><span>landmarks, all real, some regrettable</span></li>
+      <li><b>30+</b><span>things that go wrong on the road</span></li>
+      <li><b>0%</b><span>state income tax (property tax: don't ask)</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======================================================= testimonials -->
+<section class="section quotes-sec">
+  <div class="wrap">
+    <h2 class="h"><span>Critical acclaim</span>What people on the route are saying</h2>
+    <p class="sub">Every quote below appears in the game. Nobody was paid. Most of them were not asked.</p>
+    <div class="quotes">
+      <blockquote><p>Folks who go Grindset end up in the ditch talking to cactuses.</p><cite>Big Earl, a trucker</cite></blockquote>
+      <blockquote><p>Rent's going up 30% anyway. Good luck out there, champ.</p><cite>Your former landlord, jogging past</cite></blockquote>
+      <blockquote><p>Austin's just California with brisket, son.</p><cite>An old cowboy, Abilene</cite></blockquote>
+      <blockquote><p>Most folks take about 150 gallons, 300 lbs of snacks, a few bottles of sunscreen and a couple spare tires. Gas gets cheaper every state, so don't overdo it here.</p><cite>Kyle, Costco (Daly City)</cite></blockquote>
+      <blockquote><p>Keep Austin Weird. Also, could you not.</p><cite>A man on a scooter</cite></blockquote>
+      <blockquote><p>Lost a whole Tesla here last week. Floated great until it didn't.</p><cite>A guy fishing at the Colorado River</cite></blockquote>
+      <blockquote class="lizard"><p>&hellip;</p><cite>A lizard. It doesn't say anything. It just judges you.</cite></blockquote>
+      <blockquote><p>Hey! I'm also from the Bay! Small world! Do you want to start a running club?</p><cite>Your new neighbor, Austin</cite></blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== fighters -->
+<section class="section" id="fighters">
+  <div class="wrap">
+    <h2 class="h"><span>Choose your fighter</span>Four ways to leave California</h2>
+    <p class="sub">Each one gets a different bank balance and a different score multiplier. None of them get a refund on the deposit.</p>
+    <div class="fighters" id="fighters-grid"></div>
+  </div>
+</section>
+
+<!-- ========================================================== features -->
+<section class="section features">
+  <div class="wrap">
+    <h2 class="h"><span>Features</span>Everything the brochure promised, and the stuff it didn't</h2>
+    <div class="feature-grid">
+      <figure class="shot"><img src="img/title.png" alt="Title screen with a synthwave sunset and the Yoo-Haul driving past palm trees" loading="lazy"><figcaption><b>A synthwave sunset.</b> The last thing California gives you is a gorgeous goodbye, so you'll feel bad about it the whole drive.</figcaption></figure>
+      <figure class="shot"><img src="img/costco.png" alt="The Costco store screen: gasoline at $6.89 per gallon" loading="lazy"><figcaption><b>Shop at Costco (Daly City).</b> Gas is $6.89. Buy less. It gets cheaper in every state, which is the only thing in this game that does.</figcaption></figure>
+      <figure class="shot"><img src="img/forage.png" alt="Food Truck Frenzy minigame: tacos and burgers flying across the desert" loading="lazy"><figcaption><b>Food Truck Frenzy.</b> The hunting minigame, for people who have only ever hunted parking spots. Throw coupons at flying brisket. Avoid the kale salad.</figcaption></figure>
+      <figure class="shot"><img src="img/river.png" alt="River crossing screen at the Colorado River" loading="lazy"><figcaption><b>River crossings.</b> Ford it, caulk it, pay the toll, or wait. Fording a 6 ft river in a 26-foot rental truck is how legends (and tombstones) are made.</figcaption></figure>
+      <figure class="shot"><img src="img/ftb.png" alt="Franchise Tax Board event: they would like to know where you think you're going" loading="lazy"><figcaption><b>Thirty-odd road events.</b> Including the Franchise Tax Board, which would like to know where you think you're going. You owe $700 for "the vibes."</figcaption></figure>
+      <figure class="shot"><img src="img/tombstone.png" alt="A tombstone reading Here lies Kale, died of dysentery (gas station sushi)" loading="lazy"><figcaption><b>Graves that stay.</b> Write an epitaph and it haunts every future trip at that mile marker. Kale is still out there. Kale will always be out there.</figcaption></figure>
+      <figure class="shot"><img src="img/texas.png" alt="The Welcome to Texas sign under a big blue sky" loading="lazy"><figcaption><b>The Texas line.</b> The sky changes from California sunset to big Texas blue. Take a selfie with the sign. Twang +15.</figcaption></figure>
+      <figure class="shot"><img src="img/amarillo.png" alt="Amarillo: a free 72 oz steak billboard and a Buc-ee's the size of a regional airport" loading="lazy"><figcaption><b>Amarillo.</b> A free 72 oz steak (if you eat it in an hour) and a gas station the size of a regional airport. The beaver is smiling at you. The beaver knows.</figcaption></figure>
+      <figure class="shot"><img src="img/map.png" alt="The road atlas from California to Texas" loading="lazy"><figcaption><b>A road atlas.</b> Not to scale. Not to be trusted. Do not use for actual navigation, or for decisions about your life.</figcaption></figure>
+    </div>
+
+    <div class="native">
+      <h3>Native to Omarchy, polite to everyone else</h3>
+      <ul>
+        <li><b>Wears your theme.</b> Every menu follows your current Omarchy theme, live. The scenery keeps its own sunset, because some things are sacred.</li>
+        <li><b>No Electron.</b> It runs on Quickshell, the same engine as the Omarchy shell. The Yoo-Haul is already full. There's no room for a second copy of Chromium.</li>
+        <li><b>Saves after every move.</b> Close it mid-river, reboot, come back next week. Your party will still be standing on the bank, judging you.</li>
+        <li><b>An original chiptune soundtrack.</b> Every note and sound effect is generated from scratch by a tiny synth. No samples were harmed. Several were never born.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= route -->
+<section class="section route-sec" id="route">
+  <div class="wrap">
+    <h2 class="h"><span>The route</span>San Francisco to Austin, the hard way</h2>
+    <p class="sub">Fifteen landmarks along the real route. Gas gets cheaper in every state. So does your sense of self.</p>
+
+    <div class="gas" role="img" aria-label="Gas prices by state: California $6.89, Arizona $4.19, New Mexico $3.59, Texas $2.79">
+      <div class="gas-row ca"><span class="st">California</span><span class="bar" style="--v:6.89"></span><span class="px">$6.89 <small>+ vibes</small></span></div>
+      <div class="gas-row az"><span class="st">Arizona</span><span class="bar" style="--v:4.19"></span><span class="px">$4.19</span></div>
+      <div class="gas-row nm"><span class="st">New Mexico</span><span class="bar" style="--v:3.59"></span><span class="px">$3.59</span></div>
+      <div class="gas-row tx"><span class="st">Texas</span><span class="bar" style="--v:2.79"></span><span class="px">$2.79 <small>practically free</small></span></div>
+    </div>
+
+    <ol class="route" id="route-list"></ol>
+  </div>
+</section>
+
+<!-- ======================================================== obituaries -->
+<section class="section obits-sec" id="obits">
+  <div class="wrap two">
+    <div>
+      <h2 class="h"><span>In memoriam</span>The Obituary Generator</h2>
+      <p>Somebody is going to die out there. Might as well know how. The game has fifteen ailments, a dozen epitaphs, and no mercy. Press the button to bury a random member of your party, the way nature and the I-40 intended.</p>
+      <p class="muted">Leading causes of death on the Texodus Trail: dysentery, gas station sushi, In-N-Out withdrawal, ERCOT-induced anxiety, the meat sweats, and drowning (while vlogging).</p>
+      <div class="ctas"><button class="btn btn-hot" id="bury" type="button">&#9760; Bury someone</button></div>
+    </div>
+    <div class="grave-yard">
+      <div class="grave" id="grave" aria-live="polite">
+        <p class="g-here">Here lies</p>
+        <p class="g-name" id="g-name">Kale</p>
+        <p class="g-cause" id="g-cause">Died of dysentery (gas station sushi).</p>
+        <p class="g-epitaph" id="g-epitaph">"Should have bought Bitcoin in 2011."</p>
+        <p class="g-mile" id="g-mile">Mile 1,150 &middot; New Mexico</p>
+      </div>
+      <div class="grass"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================== calculator -->
+<section class="section calc-sec" id="calc">
+  <div class="wrap two">
+    <div>
+      <h2 class="h"><span>Financial planning</span>Should you move to Texas?</h2>
+      <p>A rigorous, peer-unreviewed calculator built on numbers from the game and a deep misunderstanding of economics. Not financial advice. Barely arithmetic.</p>
+      <form class="calc" id="calc-form" onsubmit="return false">
+        <label><span class="lbl">Your current rent <span class="out" id="rent-out">$3,950</span></span>
+          <input type="range" id="rent" min="1500" max="8000" step="50" value="3950">
+        </label>
+        <label><span class="lbl">How often you say "hella" <span class="out" id="hella-out">Sometimes</span></span>
+          <input type="range" id="hella" min="0" max="4" step="1" value="2">
+        </label>
+        <label class="check"><input type="checkbox" id="peloton" checked> I own a Peloton I don't ride</label>
+        <label class="check"><input type="checkbox" id="crypto"> I have a memecoin position</label>
+        <label class="check"><input type="checkbox" id="starter" checked> I have a sourdough starter with a name</label>
+      </form>
+    </div>
+    <div class="receipt" id="receipt" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ========================================================== top ten -->
+<section class="section topten-sec">
+  <div class="wrap narrow">
+    <h2 class="h center"><span>Hall of fame</span>The Top Ten Texans</h2>
+    <p class="sub center">The default leaderboard you'll be measured against. Your name goes here when you make it. If you make it.</p>
+    <table class="topten" id="topten">
+      <thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Points</th><th scope="col">Rating</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================ faq -->
+<section class="section faq-sec" id="faq">
+  <div class="wrap narrow">
+    <h2 class="h"><span>Frequently avoided questions</span>FAQ</h2>
+    <details><summary>Is this political?</summary><p>It's a game about rent. California gets roasted for the prices, Texas gets roasted for the weather, the grid and the property taxes, and Austin gets roasted for becoming the thing everyone left. Texas just has more surface area.</p></details>
+    <details><summary>Is it accurate?</summary><p>The landmarks are real. Winslow has a corner, and you can stand on it. The gas prices are vibes. The Yoo-Haul gets 10 mpg, downhill, with a tailwind, which is the most accurate thing in the game.</p></details>
+    <details><summary>Will it run on my Mac?</summary><p>No. It runs on Linux under Wayland, using Quickshell. Your Mac is welcome to move to Linux. We hear the rent is cheaper.</p></details>
+    <details><summary>What about Windows?</summary><p>Windows users already have enough problems.</p></details>
+    <details><summary>Can I finish the trail without anyone dying?</summary><p>Technically, yes. Pick April, go Hustle pace, ration sensibly, take the toll bridge, and rest when people get sick. Spiritually, no. Something in you dies at the Barstow In-N-Out no matter what.</p></details>
+    <details><summary>Why does my party keep dying of gas station sushi?</summary><p>We don't have any more questions.</p></details>
+    <details><summary>Is Yoo-Haul a real company?</summary><p>No. Any resemblance to a real orange-and-white truck rental company is a coincidence we won't be taking questions about. Kyle also isn't a real Kyle.</p></details>
+    <details><summary>Are there microtransactions?</summary><p>No. The game is free and open source. The only thing that costs money in it is the move itself, which is, if anything, too realistic.</p></details>
+    <details><summary>I'm a Texan. Should I be offended?</summary><p>Bless your heart, no. You're the promised land. You also get a new neighbor from Palo Alto, and he wants to start a running club. We're sorry.</p></details>
+  </div>
+</section>
+
+<!-- ============================================================ install -->
+<section class="section install-sec" id="install">
+  <div class="wrap two">
+    <div>
+      <h2 class="h"><span>Hit the road</span>Install</h2>
+      <p>On <a href="https://omarchy.org">Omarchy</a>, everything it needs is already there. Clone it, run the installer, launch <b>The Texodus Trail</b> from the app launcher (<kbd>Super</kbd> + <kbd>Space</kbd>), or type <code>texodus</code>.</p>
+      <div class="code">
+        <button class="copy" type="button" data-copy="git clone https://github.com/ninepointlabs/texodus-trail ~/Projects/texodus-trail&#10;cd ~/Projects/texodus-trail&#10;./install.sh">Copy</button>
+<pre><code><span class="c"># pack the truck</span>
+git clone https://github.com/ninepointlabs/texodus-trail ~/Projects/texodus-trail
+cd ~/Projects/texodus-trail
+./install.sh
+
+<span class="c"># change your mind</span>
+./install.sh --uninstall   <span class="c"># keeps your save and Top Ten</span>
+./install.sh --purge       <span class="c"># paves over the graves too</span></code></pre>
+      </div>
+      <p class="muted">Everything installs into your home directory. No sudo, no daemons, no state income tax.</p>
+    </div>
+    <div>
+      <h3>Not on Omarchy?</h3>
+      <p>You need a Wayland desktop and:</p>
+      <div class="reqs-wrap"><table class="reqs">
+        <thead><tr><th scope="col"></th><th scope="col">Arch</th><th scope="col">Fedora</th><th scope="col">Debian / Ubuntu</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Quickshell <small>(required)</small></th><td><code>quickshell</code></td><td>COPR <code>errornointernet/quickshell</code></td><td>build from source</td></tr>
+          <tr><th scope="row">Qt 6 multimedia <small>(sound)</small></th><td><code>qt6-multimedia</code></td><td><code>qt6-qtmultimedia</code></td><td><code>qml6-module-qtmultimedia</code></td></tr>
+          <tr><th scope="row"><code>jq</code> <small>(launcher)</small></th><td><code>jq</code></td><td><code>jq</code></td><td><code>jq</code></td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">Nix users: <code>quickshell</code>, <code>qt6.qtmultimedia</code> and <code>jq</code>. You knew that already. You've been waiting to tell someone.</p>
+      <p class="muted">The installer tells you what's missing. Without Qt multimedia the game runs silent, like a Californian who just saw the price of a breakfast taco in Austin.</p>
+      <h3>Tips from Kyle at Costco</h3>
+      <ul class="tips">
+        <li>About 150 gallons of gas, 300 lbs of snacks, a few bottles of sunscreen and two spare tires gets most people there.</li>
+        <li>Grindset pace gets you there fast and gets people killed.</li>
+        <li>The toll bridge is boring. Boring is good.</li>
+        <li>April is the sweet spot. August is a dare.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <img src="art/yoohaul.svg" alt="" class="final-truck">
+  <p class="final-line">The West was lost. The South got a lotta new neighbors.</p>
+  <div class="ctas center">
+    <a class="btn btn-hot" href="#install">Hit the road</a>
+    <a class="btn" href="https://github.com/ninepointlabs/texodus-trail">&#9733; Star it on GitHub</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><b>Fine print.</b> A loving parody. Yoo-Haul isn't a real company, Kyle isn't a real Kyle, and no Californians or Texans were harmed in the making of this game. Everybody in it is just trying to find somewhere to live where the tacos are good and the rent is fine. Be excellent to each other.</p>
+    <p>&copy; 2026 <a href="https://github.com/ninepointlabs">Ninepoint Labs</a> &middot; <a href="https://github.com/ninepointlabs/texodus-trail/blob/main/LICENSE">MIT License</a> &middot; <a href="https://github.com/ninepointlabs/texodus-trail">Source on GitHub</a> &middot; <span class="secret">psst: try typing <kbd>yall</kbd></span></p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="site.js"></script>
+</body>
+</html>
