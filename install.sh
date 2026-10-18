@@ -129,6 +129,11 @@ trap 'rm -rf -- "$stage"' EXIT
 cp -r "$src/app" "$src/bin" "$stage/"
 cp "$src/LICENSE" "$src/README.md" "$stage/" 2>/dev/null || true
 touch "$stage/.texodus-trail"
+# About and `texodus --about` read VERSION; take it from the release tag
+# (0.1.0, or 0.1.0-3-gabc1234 past it). Without git or a tag they say "dev".
+if version="$(git -C "$src" describe --tags --match 'v[0-9]*' --dirty 2>/dev/null)"; then
+  printf '%s\n' "${version#v}" >"$stage/VERSION"
+fi
 chmod 755 "$stage" "$stage/bin/texodus"
 if [[ -d $dest ]]; then rm -rf -- "$dest"; fi
 mv -T -- "$stage" "$dest"
