@@ -106,8 +106,14 @@ test("install.sh ships About.js and LICENSE where About and --about read them", 
     assert.strictEqual(fs.readFileSync(path.join(dest, "app", "About.js"), "utf8"), fs.readFileSync(path.join(root, "app", "About.js"), "utf8"))
     assert(fs.existsSync(path.join(dest, "app", "AboutCard.qml")))
     const about = execFileSync(path.join(home, ".local", "bin", "texodus"), ["--about"], { encoding: "utf8", env })
-    // no version system yet: an install says "dev", like the checkout
-    assert(about.startsWith(ABOUT.name + " dev\n" + ABOUT.tagline + "\n"), about.split("\n")[0])
+    // install.sh stamps VERSION from the release tag; without git or a tag it's "dev"
+    let expected = "dev"
+    try {
+      expected = execFileSync("git", ["-C", root, "describe", "--tags", "--match", "v[0-9]*", "--dirty"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim().replace(/^v/, "")
+    } catch (e) {}
+    if (expected !== "dev") assert.strictEqual(fs.readFileSync(path.join(dest, "VERSION"), "utf8"), expected + "\n")
+    else assert(!fs.existsSync(path.join(dest, "VERSION")), "VERSION written without a tag")
+    assert(about.startsWith(ABOUT.name + " " + expected + "\n" + ABOUT.tagline + "\n"), about.split("\n")[0])
     assert(about.includes("(full text: " + path.join(fs.realpathSync(dest), "LICENSE") + ")"), about)
   } finally {
     fs.rmSync(home, { recursive: true, force: true })

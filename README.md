@@ -131,7 +131,9 @@ version, license, fine print, what the game stores (no network, no
 telemetry) and the support address,
 [help@ninepointlabs.com](mailto:help@ninepointlabs.com), with keys to email
 it or copy it and your version details. `texodus --about` prints the same in
-a terminal.
+a terminal. `install.sh` stamps the version from the checkout's release tag
+(`0.1.0`, or `0.1.0-3-gabc1234` for commits past it); a checkout without git
+or tags shows `dev`.
 
 Run `./install.sh` again after pulling to update. `texodus --tiled` skips the
 floating window if you'd rather let Hyprland tile it.
