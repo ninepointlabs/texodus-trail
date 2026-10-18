@@ -3,6 +3,7 @@
 #
 #   texodus           start the game, or focus it if it's already running
 #   texodus --tiled   start it without floating the window
+#   texodus --about   print the About screen (F1 in game) as plain text
 #
 # The game is a Quickshell app (app/shell.qml). On Hyprland it opens as a
 # centered, floating 16:10 window sized to the focused monitor; nothing is
@@ -15,6 +16,30 @@ app="$(cd "$here/../app" && pwd)"
 title="The Texodus Trail"
 tiled=0
 [[ ${1:-} == "--tiled" ]] && tiled=1
+
+if [[ ${1:-} == "--about" ]]; then
+  # the same facts as the in-game About screen, from app/About.js
+  fact() { sed -n "s/^  $1: \"\(.*\)\",\{0,1\}\( *\/\/.*\)\{0,1\}\$/\1/p" "$app/About.js"; }
+  version="$(cat "$here/../VERSION" 2>/dev/null || echo dev)"
+  qs="$(quickshell --version 2>/dev/null | head -n 1 || true)"
+  qt=""
+  for q in qtpaths6 qtpaths /usr/lib/qt6/bin/qtpaths /usr/lib/*-linux-gnu/qt6/bin/qtpaths /usr/lib64/qt6/bin/qtpaths; do
+    qt="$("$q" --qt-version 2>/dev/null || true)" && [[ -n $qt ]] && break
+  done
+  echo "$(fact name) $version"
+  fact tagline
+  echo
+  echo "Made by     $(fact organization)"
+  echo "Created     $(fact created)"
+  echo "License     $(fact license), $(fact copyright) (full text: $(readlink -f "$here/../LICENSE"))"
+  echo "Support     $(fact supportEmail)"
+  echo "Built with  ${qs:-Quickshell not found}${qt:+, Qt $qt}"
+  echo
+  echo "Privacy: $(fact privacy)"
+  echo
+  echo "Fine print: $(fact credits)"
+  exit 0
+fi
 
 have_hypr() { command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; }
 

@@ -25,6 +25,11 @@ Item {
   property string view: "title"
   property string overlay: ""
   property bool firstStore: false
+  // the About card (F1) sits over whatever screen was up; a trip waits behind it
+  property bool showAbout: false
+  // About's Email button; off in tests so nothing reaches a mail client
+  property bool externalLinks: true
+  property string lastExternalUrl: ""
 
   readonly property var game: session.revision >= 0 ? session.game : null
   readonly property string mode: view === "game" ? Game.mode(game) : "none"
@@ -58,7 +63,7 @@ Item {
     id: dayTimer
     interval: 1250
     repeat: true
-    running: app.view === "game" && app.overlay === "" && app.mode === "travel"
+    running: app.view === "game" && app.overlay === "" && app.mode === "travel" && !app.showAbout
     onTriggered: app.session.travelDay()
   }
 
@@ -161,6 +166,7 @@ Item {
     { label: "Learn about the trail", value: "learn" },
     { label: "See the Top Ten Texans", value: "topten" },
     { label: "Turn sound " + (session.muted ? "on" : "off"), value: "sound" },
+    { label: "About this game", value: "about" },
     { label: "End", value: "quit" }
   ]
 
@@ -232,6 +238,7 @@ Item {
     case "learn": learnPage = 0; go("learn"); break
     case "topten": go("topten"); break
     case "sound": session.muted = !session.muted; sfx.play("select"); break
+    case "about": openAbout(); break
     case "quit": Qt.quit(); break
     }
   }
@@ -285,6 +292,18 @@ Item {
     var k = event.key
     if (k === Qt.Key_F11) { if (window) window.fullscreen = !window.fullscreen; return true }
     if (k === Qt.Key_Q && (event.modifiers & Qt.ControlModifier)) { Qt.quit(); return true }
+    if (showAbout) {
+      if (event.isAutoRepeat) return true
+      if (k === Qt.Key_Escape || k === Qt.Key_F1 || k === Qt.Key_Backspace) closeAbout()
+      else if (k === Qt.Key_R) about.toggleLicense()
+      else if (k === Qt.Key_E) about.email()
+      else if (k === Qt.Key_C) about.copyEmail()
+      else if (k === Qt.Key_V) about.copyDetails()
+      else if (k === Qt.Key_M && !(event.modifiers & Qt.ControlModifier)) session.muted = !session.muted
+      // nothing else reaches the screen behind
+      return true
+    }
+    if (k === Qt.Key_F1) { openAbout(); return true }
     if (k === Qt.Key_M && !(event.modifiers & Qt.ControlModifier) && !textFocus()) { session.muted = !session.muted; return true }
 
     if (view === "title") return titleMenu.handleKey(event) || (k === Qt.Key_Escape)
@@ -331,6 +350,29 @@ Item {
     return false
   }
 
+  function openAbout() {
+    // the Food Truck Frenzy is a 30-second dash; About waits until it's over
+    if (showAbout || overlay === "forage") return
+    showAbout = true
+    sfx.play("blip")
+    // a name field or the tombstone would otherwise eat R, E, C and V
+    focusStage()
+  }
+
+  function closeAbout() {
+    if (!showAbout) return
+    showAbout = false
+    sfx.play("blip")
+    if (view === "names") nameFields.focusField(nameIndex)
+    else if (mode === "epitaph") tombstone.focusInput()
+    else focusStage()
+  }
+
+  function openExternal(url) {
+    lastExternalUrl = url
+    if (externalLinks) Qt.openUrlExternally(url)
+  }
+
   function textFocus() {
     return view === "names" || mode === "epitaph"
   }
@@ -357,7 +399,7 @@ Item {
       height: app.sceneH
       region: app.game && app.view === "game" ? Game.regionOf(app.game) : ["ca", "az", "nm", "tx"][app.titleRegion]
       weather: app.game && app.view === "game" ? app.game.weather : "Sunny"
-      moving: app.view !== "game" ? app.view !== "intro" : app.mode === "travel" && app.overlay === ""
+      moving: app.view !== "game" ? app.view !== "intro" : app.mode === "travel" && app.overlay === "" && !app.showAbout
       landmark: app.view === "game" && app.game && app.game.at >= 0 ? Game.LANDMARKS[app.game.at] : null
       atRiver: app.mode === "river"
     }
@@ -377,7 +419,7 @@ Item {
 
       PixelText {
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "NINEPOINT LABS PRESENTS"
+        text: "NINE POINT LABS PRESENTS"
         px: 2.5
         color: "#f6f1e7"
         shadow: "#000000"
@@ -433,6 +475,7 @@ Item {
     }
 
     Tombstone {
+      id: tombstone
       anchors.fill: scene
       visible: app.view === "game" && app.mode === "epitaph"
       theme: app.theme
@@ -557,7 +600,7 @@ Item {
               lineHeight: 1.2
             }
             Text {
-              text: "↑↓ Enter · M mute · F11 fullscreen"
+              text: "↑↓ Enter · M mute · F11 fullscreen · F1 about"
               color: app.theme.dim
               font.family: app.theme.font
               font.pixelSize: 13
@@ -1277,6 +1320,16 @@ Item {
       message: app.message
       onDismissed: { app.session.ack(); app.sfx.play("blip"); Qt.callLater(app.focusStage) }
     }
+
+    // ------------------------------------------------------- about (F1)
+    AboutCard {
+      id: about
+      anchors.fill: parent
+      visible: app.showAbout
+      theme: app.theme
+      onOpenUrl: function(url) { app.openExternal(url) }
+      onClosed: app.closeAbout()
+    }
   }
 
   readonly property string travelLine: {
@@ -1297,7 +1350,7 @@ Item {
     { title: "PACE & RATIONS", text: "Chill is safe. Hustle is fine. Grindset gets you there fast and makes people sick, sad, and dead.\n\nIntermittent fasting saves snacks but hurts health. Bottomless brunch keeps everyone happy and eats through your supplies.\n\nStop to rest when people get sick. Rest heals. Hammocks heal more." },
     { title: "RIVERS", text: "You'll cross the Colorado River at Needles and the Rio Grande in Albuquerque. Ford shallow rivers. Caulk and float deeper ones (usually fine). Or pay the toll bridge and feel nothing at all.\n\nIf someone dies, you get to write their tombstone. It stays by the road forever, and future trips will pass it." },
     { title: "SCORING", text: "Make it to Austin and you score points for every survivor, by health, plus cash, supplies, Twang (how Texan you've become) and Vibes. Then it's multiplied by your occupation: the Screenwriter earns triple.\n\nTwang goes up when you learn to say y'all, buy a hat, eat a 72 oz steak, and other acts of assimilation." },
-    { title: "CONTROLS", text: "Number keys or arrows + Enter pick menu items. The mouse works everywhere.\n\nSpace stops the truck to size up the situation, and dismisses messages.\n\nM mutes the music. F11 goes fullscreen. Ctrl+Q quits. Your trip saves itself after every move, so close the window whenever you want and come back later." }
+    { title: "CONTROLS", text: "Number keys or arrows + Enter pick menu items. The mouse works everywhere.\n\nSpace stops the truck to size up the situation, and dismisses messages.\n\nM mutes the music. F11 goes fullscreen. F1 shows About (version, license, privacy, support). Ctrl+Q quits. Your trip saves itself after every move, so close the window whenever you want and come back later." }
   ]
 
   Component.onCompleted: { rollSuggestions(); focusStage() }

@@ -2,6 +2,8 @@ import QtQuick
 import QtTest
 import "../app"
 import "../app/Game.js" as Game
+import "../app/About.js" as About
+import Quickshell
 
 // End-to-end: drive the real UI with real key events from the title screen
 // to the end of a trip. Run with test/ui.sh (headless, no compositor).
@@ -135,6 +137,88 @@ Item {
       compare(session.muted, !before)
       press(Qt.Key_M)
       compare(session.muted, before)
+    }
+
+    function test_3_about() {
+      // nothing may reach a mail client; copies land in the stub's clipboard
+      app.externalLinks = false
+      session.abandon()
+      app.view = "title"
+      app.focusStage()
+
+      // from the title menu
+      press(Qt.Key_6)
+      verify(app.showAbout)
+      compare(app.view, "title")
+      compare(findChild(app, "aboutVersion").text, "Version dev")
+      compare(findChild(app, "aboutPrivacy").text, About.ABOUT.privacy)
+
+      press(Qt.Key_R)
+      var license = findChild(app, "aboutLicenseText")
+      verify(license.visible)
+      verify(license.text.indexOf("MIT License\n\nCopyright (c) 2026 Nine Point Labs\n\nPermission is hereby granted") === 0, license.text.slice(0, 60))
+      press(Qt.Key_R)
+      verify(!license.visible)
+
+      press(Qt.Key_C)
+      compare(Quickshell.clipboardText, "help@ninepointlabs.com")
+      press(Qt.Key_V)
+      verify(Quickshell.clipboardText.indexOf("The Texodus Trail dev\nQuickshell ?, Qt ?\n") === 0, Quickshell.clipboardText)
+      press(Qt.Key_E)
+      verify(app.lastExternalUrl.indexOf("mailto:help@ninepointlabs.com?subject=The%20Texodus%20Trail%20dev&body=") === 0, app.lastExternalUrl)
+
+      // menu keys do nothing behind it
+      press(Qt.Key_1)
+      press(Qt.Key_Return)
+      compare(app.view, "title")
+      verify(app.showAbout)
+      press(Qt.Key_Escape)
+      verify(!app.showAbout)
+      compare(app.view, "title")
+
+      // from a name field: About takes the keys, Esc puts the cursor back
+      press(Qt.Key_1)
+      press(Qt.Key_1)
+      compare(app.view, "names")
+      tryCompare(app, "nameIndex", 0)
+      type("Al")
+      press(Qt.Key_F1)
+      verify(app.showAbout)
+      press(Qt.Key_R)
+      press(Qt.Key_R)
+      press(Qt.Key_Escape)
+      verify(!app.showAbout)
+      compare(app.view, "names")
+      type("ex")
+      press(Qt.Key_Return, 5)
+      compare(app.view, "month")
+      // (the field keeps what test 1 typed; what matters is no R landed in it)
+      compare(app.partyNames[0].slice(-4), "Alex")
+
+      // mid-trip, About stops the clock and Esc picks up where it left off
+      press(Qt.Key_2)
+      press(Qt.Key_Space, 2)
+      compare(app.overlay, "store")
+      press(Qt.Key_Right, 18)
+      press(Qt.Key_Down); press(Qt.Key_Right, 14)
+      press(Qt.Key_Return)
+      press(Qt.Key_Escape)
+      compare(app.mode, "camp")
+      press(Qt.Key_1)
+      compare(app.mode, "travel")
+      press(Qt.Key_F1)
+      verify(app.showAbout)
+      var day = session.game.day
+      wait(1600)
+      compare(session.game.day, day)
+      compare(app.mode, "travel")
+      press(Qt.Key_Space)
+      compare(app.mode, "travel", "Space doesn't reach the road behind About")
+      press(Qt.Key_F1)
+      verify(!app.showAbout)
+      tryVerify(function() { return session.game.day > day || app.mode !== "travel" }, 3000, "the clock runs again")
+      session.abandon()
+      app.view = "title"
     }
   }
 }

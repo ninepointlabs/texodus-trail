@@ -65,6 +65,7 @@ ShellRoot {
       }
       function overlay(name: string): string { app.overlay = name; return "ok" }
       function go(view: string): string { app.view = view; return "ok" }
+      function about(): string { app.openAbout(); return app.showAbout ? "ok" : "ignored" }
       // Saves a PNG of the stage; only ever under ~/.cache, only .png.
       function shot(path: string): string {
         var allowed = Quickshell.env("HOME") + "/.cache/"
