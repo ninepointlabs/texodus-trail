@@ -3,6 +3,10 @@ import QtQuick
 
 // Dev stub for tools/snap.qml: env vars arrive as --env=KEY=VALUE arguments.
 QtObject {
+  // the UI test reads what About copies here; the real clipboard is never touched
+  property string clipboardText: ""
+  function hasVersion(major, minor) { return false }
+  function hasQtVersion(major, minor) { return false }
   function env(name) {
     var args = Qt.application.arguments
     for (var i = 0; i < args.length; i++) {

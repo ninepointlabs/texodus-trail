@@ -126,6 +126,13 @@ run `texodus`. The installer only writes to your home directory:
 | App entry | `~/.local/share/applications/texodus-trail.desktop` |
 | Icon | `~/.local/share/icons/hicolor/256x256/apps/texodus-trail.png` |
 
+**About** (`F1` anywhere but mid-Frenzy, or *About this game* on the title menu) shows the
+version, license, fine print, what the game stores (no network, no
+telemetry) and the support address,
+[help@ninepointlabs.com](mailto:help@ninepointlabs.com), with keys to email
+it or copy it and your version details. `texodus --about` prints the same in
+a terminal.
+
 Run `./install.sh` again after pulling to update. `texodus --tiled` skips the
 floating window if you'd rather let Hyprland tile it.
 
@@ -153,6 +160,7 @@ o.bind("SUPER + SHIFT + ALT + T", "The Texodus Trail", "~/.local/bin/texodus")
 | `Esc` | back out of a store, map or menu |
 | `M` | mute (the game remembers) |
 | `F11` | fullscreen |
+| `F1` | About (pauses the trip; `Esc` or `F1` goes back) |
 | `Ctrl+Q` | quit (you're already saved) |
 
 The mouse works everywhere too. In the Food Truck Frenzy, click the food, or
@@ -184,6 +192,9 @@ you edit).
 
 - `node test/play.js 3000` plays three thousand random trips against the
   engine and checks every invariant after every action.
+- `node test/about.js` checks the About facts against LICENSE, `texodus
+  --about`, that `install.sh` ships what About reads, and that the privacy
+  text names every network host in `app/`, `bin/` and `install.sh`.
 - `test/ui.sh` runs the real UI headlessly with `qmltestrunner`, pressing
   actual keys from the title screen to the Top Ten.
 - `tools/snap.sh <dir> wait:2000 shot:title.png ...` takes screenshots
