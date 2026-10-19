@@ -3,6 +3,11 @@
 
 Dev tool, needs Pillow. Run after changing the truck in tools/sprites.py:
     python3 tools/make-icon.py
+
+Also writes the desktop icon set under assets/icons/hicolor: the same pixels
+as an SVG (one rect per run of a colour, so it stays crisp at any size) and
+PNGs from 16 to 512 px scaled from icon.png with nearest-neighbour, so the
+pixel art never blurs.
 """
 import os
 import sys
@@ -66,3 +71,38 @@ img.paste(art, (0, 0), mask)
 out = os.path.join(os.path.dirname(__file__), "..", "assets", "icon.png")
 img.save(out)
 print("wrote", os.path.normpath(out))
+
+# The scalable icon: runs of one colour along each row, merged with the same
+# run in the rows below it.
+px = img.load()
+runs = {}
+for y in range(S):
+    x = 0
+    while x < S:
+        end = x
+        while end + 1 < S and px[end + 1, y] == px[x, y]:
+            end += 1
+        if px[x, y][3]:
+            key = (x, end, px[x, y])
+            if (key, y - 1) in runs:
+                runs[(key, y)] = runs.pop((key, y - 1))
+            else:
+                runs[(key, y)] = y
+        x = end + 1
+rects = []
+for ((x, end, col), last), first in sorted(runs.items(), key=lambda r: (r[1], r[0][0][0])):
+    rects.append('<rect x="%d" y="%d" width="%d" height="%d" fill="#%02x%02x%02x"/>'
+                 % (x, first, end - x + 1, last - first + 1, col[0], col[1], col[2]))
+icons = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "hicolor")
+svg = os.path.join(icons, "scalable", "apps", "texodus-trail.svg")
+os.makedirs(os.path.dirname(svg), exist_ok=True)
+with open(svg, "w") as f:
+    f.write('<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" shape-rendering="crispEdges">\n'
+            + "\n".join(rects) + "\n</svg>\n")
+print("wrote", os.path.normpath(svg))
+
+for size in (16, 24, 32, 48, 64, 128, 256, 512):
+    png = os.path.join(icons, "%dx%d" % (size, size), "apps", "texodus-trail.png")
+    os.makedirs(os.path.dirname(png), exist_ok=True)
+    img.resize((size, size), Image.NEAREST).save(png)
+    print("wrote", os.path.normpath(png))
