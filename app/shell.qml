@@ -1,3 +1,6 @@
+//@ pragma AppId texodus-trail
+// ^ the window's Wayland app_id (Quickshell 0.3+), so docks, launchers and
+//   window rules match it to texodus-trail.desktop instead of org.quickshell.
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -26,6 +29,39 @@ ShellRoot {
       session: session
       sfx: sfx
       window: win
+    }
+
+    // `texodus --selftest`: start a trip, let the real loop run for a second,
+    // drive a few days, report, quit. Used by the AppImage build's checks.
+    Timer {
+      running: Quickshell.env("TEXODUS_SELFTEST") === "1"
+      interval: 300
+      onTriggered: {
+        app.chosenOccupation = "tech"
+        app.beginTrip(4)
+        app.enterGame()
+        session.buy("gas", 150)
+        session.buy("snacks", 300)
+        app.closeOverlay()
+        check.start()
+      }
+    }
+    Timer {
+      id: check
+      interval: 1200
+      onTriggered: {
+        for (var i = 0; i < 3 && !session.game.finished; i++) {
+          while (session.game.queue.length) session.ack()
+          if (session.game.prompt) break
+          session.hitTheRoad()
+          session.travelDay()
+        }
+        var g = session.game
+        var ok = app.view === "game" && g.miles > 0
+        console.info(ok ? "texodus: selftest ok (" + g.miles + " miles, " + app.mode + ", sound " + (sfx.available ? "on" : "off") + ")"
+          : "texodus: selftest failed: " + JSON.stringify({ view: app.view, mode: app.mode, miles: g ? g.miles : null }))
+        Qt.exit(ok ? 0 : 1)
+      }
     }
 
     // `quickshell ipc -p <app dir> call texodus <fn>`: drive the game from a
