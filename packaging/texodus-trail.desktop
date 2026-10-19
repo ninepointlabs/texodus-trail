@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=The Texodus Trail
+GenericName=Road trip simulator
+Comment=You have died of state income tax. A Californian's journey to Texas.
+Exec=texodus
+Icon=texodus-trail
+Terminal=false
+Categories=Game;Simulation;
+Keywords=oregon;trail;texas;california;game;retro;
+StartupNotify=false
+StartupWMClass=texodus-trail

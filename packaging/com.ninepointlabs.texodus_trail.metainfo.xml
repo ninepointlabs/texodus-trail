@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata, read by GNOME Software, KDE Discover, Gear Lever and
+     AppImageLauncher. Add a <release> here for every tag: the AppImage build
+     refuses to package a version that isn't listed. -->
+<component type="desktop-application">
+  <id>com.ninepointlabs.texodus_trail</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>The Texodus Trail</name>
+  <summary>The Oregon Trail for the California-to-Texas exodus</summary>
+  <developer id="com.ninepointlabs">
+    <name>Nine Point Labs</name>
+  </developer>
+  <description>
+    <p>
+      It's 2026, rent in San Francisco is $3,950 and gas is $6.89 a gallon. Load up a Yoo-Haul,
+      strap the mattress to the roof and point it at Austin: 1,880 miles of I-40, two river
+      crossings, one 72 oz steak and a Buc-ee's the size of a regional airport.
+    </p>
+    <ul>
+      <li>The whole Oregon Trail loop: pick an occupation, name your party, shop, drive, rest, trade, ford rivers and bury your friends</li>
+      <li>Fifteen landmarks along the real route, and gas that gets cheaper every state</li>
+      <li>Food Truck Frenzy, the hunting minigame, for people who have only ever hunted parking spots</li>
+      <li>Graves that stay: every future trip passes the tombstones your past parties left</li>
+      <li>Side-scrolling pixel art, weather, and an original chiptune soundtrack</li>
+    </ul>
+    <p>
+      Made for Omarchy, where the menus wear your current theme and restyle live when you switch
+      themes. Everywhere else it uses its own built-in colours.
+    </p>
+    <p>
+      No accounts, no telemetry and no network access. Your trip, the Top Ten and the sound
+      setting are saved in your home directory.
+    </p>
+  </description>
+  <launchable type="desktop-id">texodus-trail.desktop</launchable>
+  <icon type="stock">texodus-trail</icon>
+  <categories>
+    <category>Game</category>
+    <category>Simulation</category>
+  </categories>
+  <keywords>
+    <keyword>oregon trail</keyword>
+    <keyword>texas</keyword>
+    <keyword>california</keyword>
+    <keyword>retro</keyword>
+    <keyword>omarchy</keyword>
+  </keywords>
+  <url type="homepage">https://texodous.ninepointlabs.com</url>
+  <url type="bugtracker">https://github.com/ninepointlabs/texodus-trail/issues</url>
+  <url type="vcs-browser">https://github.com/ninepointlabs/texodus-trail</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The title screen</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/title.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Camped at Winslow, Arizona</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/winslow.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Welcome to Texas</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/texas.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Food Truck Frenzy, the hunting minigame</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/forage.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>The road atlas</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/map.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Shopping for the trip</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/store.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Crossing the Colorado River</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/river.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>You have died of state income tax</caption>
+      <image>https://raw.githubusercontent.com/ninepointlabs/texodus-trail/main/assets/screens/dead.png</image>
+    </screenshot>
+  </screenshots>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.1" date="2026-10-18">
+      <description>
+        <p>The installed game knows its version: About and texodus --about show the release instead of "dev".</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2026-10-18">
+      <description>
+        <p>First release, with the About screen (F1, or texodus --about).</p>
+      </description>
+    </release>
+  </releases>
+</component>

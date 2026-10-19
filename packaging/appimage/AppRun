@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+# The Texodus Trail AppImage's launcher.
+#
+#   TheTexodusTrail.AppImage                          start the game, or focus it on Hyprland
+#   TheTexodusTrail.AppImage --tiled                  start it without floating the window
+#   TheTexodusTrail.AppImage --version | --about | --selftest
+#   TheTexodusTrail.AppImage --install-desktop-entry  add it to your app menu (~/.local/share)
+#   TheTexodusTrail.AppImage --remove-desktop-entry   take it out again
+#
+# Quickshell and Qt come from the AppImage; nothing is needed from the host
+# but glibc and a graphics driver. The game runs in the foreground (never
+# --daemonize: the AppImage is unmounted once this script's process exits),
+# and the Hyprland window placement from bin/texodus runs beside it.
+set -euo pipefail
+
+appdir="${APPDIR:-$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)}"
+share="$appdir/usr/share/texodus-trail"
+quickshell="$appdir/usr/bin/quickshell"
+title="The Texodus Trail"
+tiled=0
+
+# Qt finds its plugins and QML modules through usr/bin/qt.conf, so no
+# LD_LIBRARY_PATH, QT_PLUGIN_PATH or PYTHONHOME is exported, and the game's
+# children (mkdir, xdg-open) see the host environment. A host Qt's search
+# paths are dropped instead: its plugins don't match the bundled Qt.
+unset QT_PLUGIN_PATH QML_IMPORT_PATH QML2_IMPORT_PATH
+
+data="${XDG_DATA_HOME:-$HOME/.local/share}"
+desktop="$data/applications/texodus-trail.desktop"
+marker="X-Texodus-Trail-AppImage=true"
+
+# Desktop Entry spec quoting for one Exec argument: quote it, backslash-escape
+# " ` $ \ inside the quotes, then escape backslashes again for the string
+# value, and double any %.
+exec_quote() {
+  printf '"%s"' "$(printf '%s' "$1" | sed -e 's/\\/\\\\\\\\/g' -e 's/["`$]/\\\\&/g' -e 's/%/%%/g')"
+}
+
+icon_files() {
+  (cd "$appdir/usr/share/icons/hicolor" && find . -path '*/apps/texodus-trail.*' | sed 's|^\./||' | sort)
+}
+
+refresh_caches() {
+  command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q "$data/applications" 2>/dev/null || true
+  command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q -f -t "$data/icons/hicolor" 2>/dev/null || true
+}
+
+install_entry() {
+  if [[ -z ${APPIMAGE:-} ]]; then
+    echo "texodus: --install-desktop-entry needs to be run from the .AppImage file itself, not an extracted copy." >&2
+    exit 1
+  fi
+  if [[ -e $desktop ]] && ! grep -qx "$marker" "$desktop"; then
+    echo "texodus: $desktop already exists and wasn't written by the AppImage (the game is installed some other way, e.g. install.sh); leaving it alone." >&2
+    exit 1
+  fi
+  mkdir -p "$(dirname "$desktop")"
+  local tmp
+  tmp="$(mktemp "$(dirname "$desktop")/.texodus-trail.XXXXXX")"
+  EXEC="Exec=$(exec_quote "$APPIMAGE")" TRYEXEC="TryExec=$(printf '%s' "$APPIMAGE" | sed 's/\\/\\\\/g')" \
+    awk '/^Exec=/ { print ENVIRON["EXEC"]; print ENVIRON["TRYEXEC"]; next } /^X-AppImage-/ { next } { print }' \
+    "$appdir/texodus-trail.desktop" >"$tmp"
+  echo "$marker" >>"$tmp"
+  chmod 644 "$tmp"
+  mv -f -- "$tmp" "$desktop"
+  echo "Installed $desktop"
+  local f
+  while read -r f; do
+    install -Dm644 "$appdir/usr/share/icons/hicolor/$f" "$data/icons/hicolor/$f"
+    echo "Installed $data/icons/hicolor/$f"
+  done < <(icon_files)
+  refresh_caches
+  echo "The Texodus Trail is in your app menu now; it launches $APPIMAGE (run --install-desktop-entry again if you move it)."
+}
+
+remove_entry() {
+  if [[ ! -e $desktop ]]; then
+    echo "texodus: no AppImage desktop entry at $desktop; nothing to remove."
+    exit 0
+  fi
+  if ! grep -qx "$marker" "$desktop"; then
+    echo "texodus: $desktop wasn't written by the AppImage; leaving it alone." >&2
+    exit 1
+  fi
+  rm -f -- "$desktop"
+  echo "Removed $desktop"
+  local f
+  while read -r f; do
+    if [[ -e $data/icons/hicolor/$f ]]; then
+      rm -f -- "$data/icons/hicolor/$f"
+      echo "Removed $data/icons/hicolor/$f"
+    fi
+  done < <(icon_files)
+  refresh_caches
+}
+
+usage() {
+  echo "usage: ${ARGV0:-texodus} [--tiled | --version | --about | --selftest | --install-desktop-entry | --remove-desktop-entry]"
+}
+
+case "${1:-}" in
+  --install-desktop-entry) install_entry; exit 0 ;;
+  --remove-desktop-entry) remove_entry; exit 0 ;;
+  --version)
+    echo "texodus $(cat "$share/VERSION")"
+    exit 0
+    ;;
+  --about | --selftest)
+    # bin/texodus does these; it finds the bundled quickshell (and qtpaths,
+    # for the Qt version in --about) first on PATH. 0.1.1 and older have no
+    # --selftest (a backfilled AppImage builds that release's bin/texodus).
+    if [[ $1 == --selftest ]] && ! grep -q -- '--selftest' "$share/bin/texodus"; then
+      echo "texodus: this version has no --selftest" >&2
+      exit 2
+    fi
+    PATH="$appdir/usr/bin:$PATH" exec "$share/bin/texodus" "$1"
+    ;;
+  -h | --help) usage; exit 0 ;;
+  --tiled) tiled=1 ;;
+  "") ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+have_hypr() { command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; }
+
+window_address() {
+  hyprctl clients -j 2>/dev/null | jq -r --arg t "$title" '.[] | select(.title == $t) | .address' | head -n 1
+}
+
+# The same placement bin/texodus does after starting the game.
+place_window() {
+  local addr="" mw mh w h prop
+  for _ in $(seq 100); do
+    addr="$(window_address || true)"
+    [[ -n $addr ]] && break
+    sleep 0.1
+  done
+  [[ -n $addr ]] || return 0
+  for prop in opacity opacity_inactive; do
+    hyprctl dispatch "hl.dsp.window.set_prop({ prop = \"$prop\", value = \"1\", window = \"address:$addr\" })" >/dev/null 2>&1 || true
+  done
+  ((tiled)) && return 0
+  read -r mw mh < <(hyprctl monitors -j | jq -r '.[] | select(.focused) | "\((.width / .scale) | floor) \((.height / .scale) | floor)"')
+  w=$((mw * 80 / 100))
+  h=$((w * 10 / 16))
+  if ((h > mh * 85 / 100)); then
+    h=$((mh * 85 / 100))
+    w=$((h * 16 / 10))
+  fi
+  hyprctl dispatch "hl.dsp.window.float({ action = \"enable\", window = \"address:$addr\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.resize({ x = $w, y = $h, exact = true, window = \"address:$addr\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.center({ window = \"address:$addr\" })" >/dev/null 2>&1 || true
+}
+
+if have_hypr; then
+  addr="$(window_address || true)"
+  if [[ -n $addr ]]; then
+    hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1 ||
+      hyprctl dispatch focuswindow "address:$addr" >/dev/null 2>&1 || true
+    exit 0
+  fi
+  # detached, so it never waits on (or is left a zombie of) the game
+  (place_window </dev/null >/dev/null 2>&1 &)
+fi
+
+# The window's identity, so docks group it under texodus-trail.desktop:
+# QS_APP_ID sets the Wayland app_id (app/shell.qml also sets it with a
+# pragma; this covers releases from before that). RESOURCE_NAME sets the X11
+# WM_CLASS to "texodus-trail", "quickshell", which StartupWMClass matches;
+# Quickshell starts Qt without an argv[0], so without it the window has no
+# WM_CLASS at all. Both are read only by Quickshell and Qt X11 apps.
+export QS_APP_ID=texodus-trail RESOURCE_NAME=texodus-trail
+exec "$quickshell" --no-duplicate --path "$share/app"

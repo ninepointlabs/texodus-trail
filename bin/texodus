@@ -4,6 +4,8 @@
 #   texodus           start the game, or focus it if it's already running
 #   texodus --tiled   start it without floating the window
 #   texodus --about   print the About screen (F1 in game) as plain text
+#   texodus --version   print the version
+#   texodus --selftest  load the game headless, drive a few days, exit 0 if it ran
 #
 # The game is a Quickshell app (app/shell.qml). On Hyprland it opens as a
 # centered, floating 16:10 window sized to the focused monitor; nothing is
@@ -16,11 +18,33 @@ app="$(cd "$here/../app" && pwd)"
 title="The Texodus Trail"
 tiled=0
 [[ ${1:-} == "--tiled" ]] && tiled=1
+version="$(cat "$here/../VERSION" 2>/dev/null || echo dev)"
+
+if [[ ${1:-} == "--version" ]]; then
+  echo "texodus $version"
+  exit 0
+fi
+
+if [[ ${1:-} == "--selftest" ]]; then
+  # No compositor needed: run offscreen with a throwaway runtime dir and
+  # state, and let shell.qml report whether the game actually ran. (No host
+  # platform theme either: Omarchy's gtk3 one wants a display.)
+  tmp="$(mktemp -d)"
+  trap 'rm -rf -- "$tmp"' EXIT
+  out="$(TEXODUS_SELFTEST=1 QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME= XDG_RUNTIME_DIR="$tmp" XDG_STATE_HOME="$tmp/state" \
+    timeout 30 quickshell --path "$app" 2>&1 || true)"
+  if grep -q "texodus: selftest ok" <<<"$out"; then
+    grep -o "texodus: selftest ok.*" <<<"$out"
+    exit 0
+  fi
+  echo "$out" >&2
+  echo "texodus: selftest FAILED" >&2
+  exit 1
+fi
 
 if [[ ${1:-} == "--about" ]]; then
   # the same facts as the in-game About screen, from app/About.js
   fact() { sed -n "s/^  $1: \"\(.*\)\",\{0,1\}\( *\/\/.*\)\{0,1\}\$/\1/p" "$app/About.js"; }
-  version="$(cat "$here/../VERSION" 2>/dev/null || echo dev)"
   qs="$(quickshell --version 2>/dev/null | head -n 1 || true)"
   qt=""
   for q in qtpaths6 qtpaths /usr/lib/qt6/bin/qtpaths /usr/lib/*-linux-gnu/qt6/bin/qtpaths /usr/lib64/qt6/bin/qtpaths; do

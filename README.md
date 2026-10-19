@@ -84,7 +84,8 @@ regional airport. Your party will get dysentery. It's tradition.
 
 On Omarchy: nothing. Everything it needs ships with Omarchy.
 
-Anywhere else, you need a Wayland desktop and:
+Anywhere else, the [AppImage](#other-linux-distros-appimage) brings
+everything it needs. To install from source you need a Wayland desktop and:
 
 | | Arch | Fedora | Debian / Ubuntu | Nix |
 |---|---|---|---|---|
@@ -151,6 +152,43 @@ o.bind("SUPER + SHIFT + ALT + T", "The Texodus Trail", "~/.local/bin/texodus")
 ./install.sh --purge       # paves over the graves too
 ```
 
+### Other Linux distros (AppImage)
+
+No Quickshell package for your distro? Releases also ship
+`texodus-trail-<version>-x86_64.AppImage`, with Quickshell and Qt inside. It runs on any x86_64 distribution from 2022 on (glibc 2.35+:
+Ubuntu 22.04, Debian 12, Fedora 39, openSUSE Leap 15.6 and newer), on
+Wayland or X11, and still wears your theme on Omarchy. Download it from the
+[latest release](https://github.com/ninepointlabs/texodus-trail/releases/latest), then:
+
+```bash
+chmod +x texodus-trail-0.1.1-x86_64.AppImage
+./texodus-trail-0.1.1-x86_64.AppImage
+```
+
+Or let [autonomix-cli](https://github.com/ninepointlabs/autonomix-cli)
+fetch it and keep it updated:
+
+```bash
+autonomix-cli add https://github.com/ninepointlabs/texodus-trail
+```
+
+To put it in your app menu and dock, let [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever)
+or [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher) take
+it (both also update it in place from GitHub releases), or have it add itself:
+
+```bash
+./texodus-trail-0.1.1-x86_64.AppImage --install-desktop-entry   # ~/.local/share/applications and icons
+./texodus-trail-0.1.1-x86_64.AppImage --remove-desktop-entry    # takes them out again
+```
+
+If it won't start with a FUSE error, install your distro's `fuse3` package
+(it doesn't need the old `libfuse2`), or run it with
+`--appimage-extract-and-run`. `--version`, `--about` and `--tiled` work as
+they do for `texodus`. It saves to the same
+`~/.local/state/texodus-trail/save.json` as an `install.sh` install, so your
+trip carries over either way. Use one or the other for the app menu entry:
+each leaves the other's `texodus-trail.desktop` alone.
+
 ## Playing
 
 | Key | Does |
@@ -203,9 +241,26 @@ you edit).
   without a compositor (that's how the ones above were made).
 - `python3 tools/sprites.py` redraws `app/Sprites.js` from the drawing code;
   `python3 tools/make-sounds.py` regenerates every sound; `tools/make-icon.py`
-  the icon (needs Pillow).
+  the icon and the desktop icon set in `assets/icons/` (needs Pillow).
 - While the game is running, `tools/drive.sh state` (or `key space`,
   `travel 3`, ...) pokes it over Quickshell IPC.
+- `bin/texodus --selftest` runs the real game headless for a second and
+  drives a few days of the trip.
+
+The AppImage builds on Ubuntu 22.04 (locally: an `ubuntu:22.04` container;
+the Quickshell build wants a few GB of RAM, `JOBS=2` keeps it lower):
+
+```bash
+sudo packaging/appimage/deps.sh
+packaging/appimage/build.sh 0.1.1     # dist/texodus-trail-0.1.1-x86_64.AppImage (+ .zsync, .sha256)
+packaging/appimage/test.sh dist/texodus-trail-0.1.1-x86_64.AppImage
+```
+
+Releases: add a `<release>` to
+`packaging/com.ninepointlabs.texodus_trail.metainfo.xml`, commit, tag
+`vX.Y.Z` and publish the release on GitHub.
+`.github/workflows/appimage.yml` then builds and checks the AppImage and
+attaches it (with its `.zsync` and `.sha256`) to the release.
 
 ## Fine print
 
