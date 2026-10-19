@@ -1,0 +1,113 @@
+name: AppImage
+
+# Build the AppImage (Quickshell and Qt bundled) on Ubuntu 22.04, check it
+# with packaging/appimage/test.sh, and attach it to the release.
+#
+# - Publishing a release (vX.Y.Z) builds that tag and attaches
+#   texodus-trail-X.Y.Z-x86_64.AppImage with its .zsync (in-place updates)
+#   and .sha256. Add a <release> for the version to
+#   packaging/com.ninepointlabs.texodus_trail.metainfo.xml before tagging.
+# - Run it by hand with a tag (Actions > AppImage > Run workflow) to add an
+#   AppImage to a release made before this workflow existed: it builds that
+#   tag's game with this branch's packaging.
+# - Pull requests that touch the game or its packaging build and check it,
+#   without uploading anything.
+#
+# Uploads only ever add or replace the three texodus-trail-*-x86_64.AppImage*
+# files; nothing else in a release changes.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build the AppImage for and attach it to (e.g. v0.1.1)
+        required: true
+  pull_request:
+    paths:
+      - app/**
+      - bin/**
+      - assets/icons/**
+      - packaging/**
+      - .github/workflows/appimage.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    outputs:
+      tag: ${{ steps.what.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Version and game files
+        id: what
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          game="$GITHUB_WORKSPACE"
+          tag=""
+          if [[ $GITHUB_EVENT_NAME == workflow_dispatch ]]; then
+            tag="$INPUT_TAG"
+            [[ $tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a release tag: $tag"; exit 1; }
+            git rev-parse --verify --quiet "refs/tags/$tag" >/dev/null || { echo "no tag $tag"; exit 1; }
+            game="$RUNNER_TEMP/game"
+            git worktree add --detach "$game" "$tag"
+          elif [[ $GITHUB_EVENT_NAME == release ]]; then
+            tag="$RELEASE_TAG"
+            [[ $tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a release tag: $tag"; exit 1; }
+          fi
+          if [[ -n $tag ]]; then
+            version="${tag#v}"
+          else
+            # pull requests: the newest release in the metainfo
+            version="$(grep -m1 -o '<release version="[^"]*"' packaging/com.ninepointlabs.texodus_trail.metainfo.xml | cut -d'"' -f2)"
+          fi
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+          echo "game=$game" >>"$GITHUB_OUTPUT"
+          echo "AppImage for The Texodus Trail $version, game files from $game"
+      - name: Install build tools
+        run: sudo packaging/appimage/deps.sh
+      # Qt and the Quickshell build take most of the time and only change
+      # with these scripts.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            build/appimage/qt
+            build/appimage/quickshell
+          key: appimage-qt-quickshell-${{ hashFiles('packaging/appimage/deps.sh', 'packaging/appimage/build-quickshell.sh', 'packaging/appimage/build.sh') }}
+      - name: Build
+        run: packaging/appimage/build.sh "${{ steps.what.outputs.version }}" "${{ steps.what.outputs.game }}"
+      - name: Check
+        run: packaging/appimage/test.sh "dist/texodus-trail-${{ steps.what.outputs.version }}-x86_64.AppImage"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appimage
+          path: dist/texodus-trail-*-x86_64.AppImage*
+          if-no-files-found: error
+
+  # Releases and hand-run backfills only; pull requests stop after the build.
+  upload:
+    needs: build
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: appimage
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.build.outputs.tag }}
+        run: |
+          echo "Assets before:"; gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
+          gh release upload "$TAG" texodus-trail-*-x86_64.AppImage texodus-trail-*-x86_64.AppImage.zsync texodus-trail-*-x86_64.AppImage.sha256 \
+            --repo "$GITHUB_REPOSITORY" --clobber
+          echo "Assets after:"; gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
