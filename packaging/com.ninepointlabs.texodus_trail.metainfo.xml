@@ -89,6 +89,11 @@
   </supports>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.1.2" date="2026-10-19">
+      <description>
+        <p>An AppImage, with Quickshell and Qt inside, so the game runs on other Linux distributions too.</p>
+      </description>
+    </release>
     <release version="0.1.1" date="2026-10-18">
       <description>
         <p>The installed game knows its version: About and texodus --about show the release instead of "dev".</p>

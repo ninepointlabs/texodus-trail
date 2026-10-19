@@ -161,8 +161,8 @@ Wayland or X11, and still wears your theme on Omarchy. Download it from the
 [latest release](https://github.com/ninepointlabs/texodus-trail/releases/latest), then:
 
 ```bash
-chmod +x texodus-trail-0.1.1-x86_64.AppImage
-./texodus-trail-0.1.1-x86_64.AppImage
+chmod +x texodus-trail-0.1.2-x86_64.AppImage
+./texodus-trail-0.1.2-x86_64.AppImage
 ```
 
 Or let [autonomix-cli](https://github.com/ninepointlabs/autonomix-cli)
@@ -177,8 +177,8 @@ or [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher) take
 it (both also update it in place from GitHub releases), or have it add itself:
 
 ```bash
-./texodus-trail-0.1.1-x86_64.AppImage --install-desktop-entry   # ~/.local/share/applications and icons
-./texodus-trail-0.1.1-x86_64.AppImage --remove-desktop-entry    # takes them out again
+./texodus-trail-0.1.2-x86_64.AppImage --install-desktop-entry   # ~/.local/share/applications and icons
+./texodus-trail-0.1.2-x86_64.AppImage --remove-desktop-entry    # takes them out again
 ```
 
 If it won't start with a FUSE error, install your distro's `fuse3` package
@@ -252,8 +252,8 @@ the Quickshell build wants a few GB of RAM, `JOBS=2` keeps it lower):
 
 ```bash
 sudo packaging/appimage/deps.sh
-packaging/appimage/build.sh 0.1.1     # dist/texodus-trail-0.1.1-x86_64.AppImage (+ .zsync, .sha256)
-packaging/appimage/test.sh dist/texodus-trail-0.1.1-x86_64.AppImage
+packaging/appimage/build.sh 0.1.2     # dist/texodus-trail-0.1.2-x86_64.AppImage (+ .zsync, .sha256)
+packaging/appimage/test.sh dist/texodus-trail-0.1.2-x86_64.AppImage
 ```
 
 Releases: add a `<release>` to
