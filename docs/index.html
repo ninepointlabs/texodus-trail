@@ -288,10 +288,21 @@ cd ~/Projects/texodus-trail
 ./install.sh --purge       <span class="c"># paves over the graves too</span></code></pre>
       </div>
       <p class="muted">Everything installs into your home directory. No sudo, no daemons, no state income tax.</p>
+      <h3>Other Linux (AppImage)</h3>
+      <p>No Quickshell on your distro? The AppImage packs Quickshell and Qt into one file. It runs on any x86_64 distro with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 39 and newer), on Wayland or X11. Download <a href="https://github.com/ninepointlabs/texodus-trail/releases/download/v0.1.2/texodus-trail-0.1.2-x86_64.AppImage">texodus-trail-0.1.2-x86_64.AppImage</a>, then:</p>
+      <div class="code">
+        <button class="copy" type="button" data-copy="chmod +x texodus-trail-0.1.2-x86_64.AppImage&#10;./texodus-trail-0.1.2-x86_64.AppImage">Copy</button>
+<pre><code>chmod +x texodus-trail-0.1.2-x86_64.AppImage
+./texodus-trail-0.1.2-x86_64.AppImage
+
+<span class="c"># put it in your app menu</span>
+./texodus-trail-0.1.2-x86_64.AppImage --install-desktop-entry</code></pre>
+      </div>
+      <p class="muted">Or let <a href="https://flathub.org/apps/it.mijorus.gearlever">Gear Lever</a> or <a href="https://github.com/TheAssassin/AppImageLauncher">AppImageLauncher</a> add it to your menu and keep it updated. Same save file as the installer, so your trip carries over.</p>
     </div>
     <div>
       <h3>Not on Omarchy?</h3>
-      <p>You need a Wayland desktop and:</p>
+      <p>To install from source, you need a Wayland desktop and:</p>
       <div class="reqs-wrap"><table class="reqs">
         <thead><tr><th scope="col"></th><th scope="col">Arch</th><th scope="col">Fedora</th><th scope="col">Debian / Ubuntu</th></tr></thead>
         <tbody>
