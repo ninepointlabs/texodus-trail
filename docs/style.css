@@ -264,7 +264,7 @@ h3 { font: 13px/1.6 var(--pixel); color: var(--yellow); margin: 32px 0 14px; }
 .g-cause { font-style: italic; margin: 0 0 14px; font-size: 15px; }
 .g-epitaph { margin: 0 0 18px; font-weight: 600; font-size: 15px; color: #2b2533; }
 .g-mile { font: 9px/1.5 var(--pixel); margin: 0; color: #5a5466; text-transform: uppercase; }
-.grass { width: min(110%, 480px); height: 22px; margin-top: -6px; background: repeating-linear-gradient(90deg, #4f9b3a 0 10px, #2f6b25 10px 14px); border: 4px solid var(--ink); }
+.grass { width: min(110%, 480px, calc(100vw - 32px)); height: 22px; margin-top: -6px; background: repeating-linear-gradient(90deg, #4f9b3a 0 10px, #2f6b25 10px 14px); border: 4px solid var(--ink); }
 
 /* calculator */
 .calc { display: grid; gap: 18px; margin-top: 24px; }
@@ -318,6 +318,8 @@ details p { margin: 0; padding: 0 20px 18px; color: var(--paper-2); }
 .copy { position: absolute; top: 10px; right: 10px; font: 9px/1 var(--pixel); padding: 8px 10px; background: var(--ink-3); color: var(--paper); border: 2px solid var(--line); cursor: pointer; }
 .copy:hover { border-color: var(--yellow); color: var(--yellow); }
 .install-sec .two { align-items: start; }
+.install-sec .two > * { min-width: 0; }
+.install-sec p code, .install-sec p a { overflow-wrap: anywhere; }
 .reqs-wrap { overflow-x: auto; margin: 6px 0 14px; }
 .reqs { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
 .reqs th, .reqs td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -325,6 +327,11 @@ details p { margin: 0; padding: 0 20px 18px; color: var(--paper-2); }
 .reqs tbody th { font-weight: 600; color: var(--paper); }
 .reqs small { color: var(--muted); font-weight: 400; display: block; }
 .reqs code { font-size: 12px; white-space: nowrap; }
+@media (min-width: 781px) {
+  /* two-column layout: let the table fit its column instead of scrolling */
+  .reqs { min-width: 0; }
+  .reqs code { white-space: normal; }
+}
 .tips { padding-left: 20px; color: var(--paper-2); font-size: 14px; }
 .tips li { margin-bottom: 6px; }
 
